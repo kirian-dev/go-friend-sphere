@@ -1,0 +1,8 @@
+server:
+  AppVersion: 1.0.0
+  Port: 8080
+  Mode: development
+  ReadTimeout: 5
+  WriteTimeout: 5
+  CxtDefaultTimeout: 12 
+  Debug: false
