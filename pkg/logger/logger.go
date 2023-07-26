@@ -1,7 +1,7 @@
 package logger
 
 import (
-	config "go-friend-sphere/conifg"
+	config "go-friend-sphere/config"
 	"os"
 
 	"go.uber.org/zap"

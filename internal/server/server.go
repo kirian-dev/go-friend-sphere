@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	config "go-friend-sphere/conifg"
+	config "go-friend-sphere/config"
 	"go-friend-sphere/pkg/logger"
 	"net/http"
 	"os"
@@ -37,7 +37,7 @@ func (s *Server) Run() error {
 	}
 
 	go func() {
-		s.logger.Info("Server is listening on PORT %s", s.cfg.Server.Port)
+		s.logger.Infof("Server is listening on PORT %s", s.cfg.Server.Port)
 		if err := server.ListenAndServe(); err != nil {
 			s.logger.Fatalf("Error starting server: %v", err)
 		}

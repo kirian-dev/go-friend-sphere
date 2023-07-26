@@ -1,7 +1,7 @@
 package main
 
 import (
-	config "go-friend-sphere/conifg"
+	config "go-friend-sphere/config"
 	"go-friend-sphere/internal/server"
 	"go-friend-sphere/pkg/db/postgres"
 	"go-friend-sphere/pkg/helpers"
@@ -32,13 +32,13 @@ func main() {
 	}
 
 	logger := logger.InitLogger(cfg)
-	logger.Info("App version: %s", "Mode: %s", cfg.Server.AppVersion, cfg.Server.Mode)
+	logger.Infof("App version: %s, Mode: %s", cfg.Server.AppVersion, cfg.Server.Mode)
 
 	psqlDB, err := postgres.NewPostgresDB(cfg)
 	if err != nil {
 		logger.Fatalf("Failed to create database: %v", err)
 	} else {
-		logger.Info("Postgres connected, status: %v", psqlDB.Stats())
+		logger.Infof("Postgres connected, status: %v", psqlDB.Stats())
 	}
 
 	defer psqlDB.Close()

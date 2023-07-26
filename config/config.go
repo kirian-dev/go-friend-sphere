@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -43,7 +42,7 @@ type JaegerConfig struct {
 
 func LoadConfig(filename string) (*viper.Viper, error) {
 	v := viper.New()
-	fmt.Printf("Loading config %s\n", filename)
+
 	v.SetConfigName(filename)
 	v.AddConfigPath(".")
 	v.AutomaticEnv()

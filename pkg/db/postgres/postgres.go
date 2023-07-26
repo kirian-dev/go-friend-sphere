@@ -2,10 +2,12 @@ package postgres
 
 import (
 	"fmt"
-	config "go-friend-sphere/conifg"
+	config "go-friend-sphere/config"
 	"time"
 
+	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 const (
