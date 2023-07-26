@@ -12,7 +12,7 @@ type ZapLogger struct {
 	logger *zap.SugaredLogger
 }
 
-func NewZapLogger(cfg *config.Config) (*ZapLogger, error) {
+func InitLogger(cfg *config.Config) *ZapLogger {
 	var logLevel zapcore.Level
 	switch cfg.Server.Mode {
 	case "debug":
@@ -44,7 +44,7 @@ func NewZapLogger(cfg *config.Config) (*ZapLogger, error) {
 
 	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)).Sugar()
 
-	return &ZapLogger{logger: logger}, nil
+	return &ZapLogger{logger: logger}
 }
 
 func (l *ZapLogger) Debug(args ...interface{}) {

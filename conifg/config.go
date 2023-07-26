@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -9,7 +10,9 @@ import (
 )
 
 type Config struct {
-	Server ServerConfig
+	Server   ServerConfig
+	Jaeger   JaegerConfig
+	Postgres PostgresConfig
 }
 
 type ServerConfig struct {
@@ -22,10 +25,26 @@ type ServerConfig struct {
 	Debug             bool
 }
 
+type PostgresConfig struct {
+	PostgresDbname   string
+	PostgresUser     string
+	PostgresPassword string
+	PostgresPort     string
+	PostgresHost     string
+	PostgresSslMode  string
+	PgDriver         string
+}
+
+type JaegerConfig struct {
+	Host        string
+	ServiceName string
+	LogSpans    bool
+}
+
 func LoadConfig(filename string) (*viper.Viper, error) {
 	v := viper.New()
-
-	v.SetConfigFile((filename))
+	fmt.Printf("Loading config %s\n", filename)
+	v.SetConfigName(filename)
 	v.AddConfigPath(".")
 	v.AutomaticEnv()
 	if err := v.ReadInConfig(); err != nil {
@@ -34,6 +53,7 @@ func LoadConfig(filename string) (*viper.Viper, error) {
 		}
 		return nil, err
 	}
+
 	return v, nil
 }
 

@@ -1,10 +1,10 @@
 server:
   AppVersion: 1.0.0
-  Port: 8080
-  Mode: development
-  ReadTimeout: 5
-  WriteTimeout: 5
-  CxtDefaultTimeout: 12 
+  Port: :5000
+  Mode: Development
+  ReadTimeout: 10
+  WriteTimeout: 10
+  CtxDefaultTimeout: 12
   Debug: false
 
 postgres: 
@@ -15,6 +15,7 @@ postgres:
   PostgresHost: localhost
   PostgresSslMode: disable
   PgxDriver: pgx
+
 
 jaeger:
   Host: localhost:6831
