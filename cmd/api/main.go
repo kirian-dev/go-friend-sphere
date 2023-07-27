@@ -68,7 +68,7 @@ func main() {
 	defer closer.Close()
 	logger.Info("Opentracing connected successfully")
 
-	s := server.NewServer(cfg, logger, psqlDB)
+	s := server.NewServer(cfg, *logger, psqlDB)
 	if err := s.Run(); err != nil {
 		log.Fatal(err)
 	}

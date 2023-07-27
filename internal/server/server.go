@@ -20,11 +20,11 @@ const (
 
 type Server struct {
 	cfg    *config.Config
-	logger *logger.ZapLogger
+	logger logger.ZapLogger
 	db     *sqlx.DB
 }
 
-func NewServer(cfg *config.Config, logger *logger.ZapLogger, db *sqlx.DB) *Server {
+func NewServer(cfg *config.Config, logger logger.ZapLogger, db *sqlx.DB) *Server {
 	return &Server{cfg: cfg, logger: logger, db: db}
 }
 
@@ -42,6 +42,10 @@ func (s *Server) Run() error {
 			s.logger.Fatalf("Error starting server: %v", err)
 		}
 	}()
+
+	if err := s.Handlers(); err != nil {
+		return err
+	}
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
