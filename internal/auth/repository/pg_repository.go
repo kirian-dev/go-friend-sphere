@@ -18,7 +18,12 @@ func NewAuthRepo(db *sqlx.DB) auth.Repository {
 }
 
 func (r *authRepo) Register(ctx context.Context, user *models.User) (*models.User, error) {
-	return nil, nil
+	u := &models.User{}
+	if err := r.db.QueryRowxContext(ctx, createUser, &user.Email, &user.Password, &user.FirstName, &user.LastName).StructScan(u); err != nil {
+		return nil, errors.Wrap(err, "auth repository, register method")
+	}
+
+	return u, nil
 }
 
 func (r *authRepo) FindByEmail(ctx context.Context, user *models.User) (*models.User, error) {

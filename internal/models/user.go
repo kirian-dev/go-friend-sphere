@@ -14,4 +14,5 @@ type User struct {
 	Birthday          *string   `json:"birthday"`
 	UpdateAt          time.Time `json:"update_at"`
 	CreatedAt         time.Time `json:"created_at"`
+	LastLoginAt       time.Time `json:"last_login_at"`
 }
