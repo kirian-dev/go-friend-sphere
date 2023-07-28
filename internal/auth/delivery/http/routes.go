@@ -8,4 +8,10 @@ import (
 
 func AuthRoutes(r chi.Router, h auth.Handlers) {
 	r.Post("/register", h.Register())
+	r.Post("/login", h.Login())
+	// r.Post("/logout", h.Logout())
+	r.Get("/all", h.GeUsers())
+	r.Get("/{userId}", h.GetUserById())
+	r.Put("/{userId}", h.GetUserById())
+	r.Delete("/{userId}", h.GetUserById())
 }

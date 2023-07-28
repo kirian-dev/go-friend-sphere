@@ -1,8 +1,10 @@
 -- +goose Up
 -- +goose StatementBegin
+DROP TABLE IF EXISTS users CASCADE;
+
 CREATE TABLE users (
-  user_id UUID PRIMARY KEY  ,
-  firs_name VARCHAR(64) NOT NULL CHECK (firs_name <> ''),
+  user_id serial PRIMARY KEY,
+  first_name VARCHAR(64) NOT NULL CHECK (first_name <> ''),
   last_name VARCHAR(64) NOT NULL CHECK (last_name <> ''),
   email VARCHAR(64) UNIQUE NOT NULL CHECK (email <> ''),
   password VARCHAR(255) NOT NULL CHECK (octet_length(password) <> 0),
@@ -18,5 +20,5 @@ CREATE TABLE users (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS sources;
+DROP TABLE IF EXISTS users;
 -- +goose StatementEnd
