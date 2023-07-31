@@ -12,6 +12,6 @@ func AuthRoutes(r chi.Router, h auth.Handlers) {
 	// r.Post("/logout", h.Logout())
 	r.Get("/all", h.GeUsers())
 	r.Get("/{userId}", h.GetUserById())
-	r.Put("/{userId}", h.GetUserById())
-	r.Delete("/{userId}", h.GetUserById())
+	r.Put("/{userId}", h.UpdateUser())
+	r.Delete("/{userId}", h.DeleteUser())
 }

@@ -70,12 +70,14 @@ func (u *authUC) UpdateUser(ctx context.Context, user *models.User) (*models.Use
 	if user.Phone != nil {
 		*user.Phone = strings.TrimSpace(*user.Phone)
 	}
-	updateUser, err := u.authRepo.UpdateUser(ctx, user)
+	updatedUser, err := u.authRepo.UpdateUser(ctx, user)
 	if err != nil {
 		return nil, errors.New("Error updating user: " + err.Error())
 	}
 
-	return updateUser, nil
+	helpers.RemovePassword(updatedUser)
+
+	return updatedUser, nil
 }
 
 func (u *authUC) DeleteUser(ctx context.Context, userId int64) error {

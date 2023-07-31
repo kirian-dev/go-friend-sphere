@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/json"
 	"go-friend-sphere/config"
 	"go-friend-sphere/internal/auth"
 	"go-friend-sphere/internal/models"
@@ -115,8 +116,26 @@ func (h *authHandlers) UpdateUser() http.HandlerFunc {
 			return
 		}
 
-		user := &models.User{}
-		user.UserID = userId
+		// Parse the request body to get the JSON data from the client
+		var updateUser struct {
+			Email     string `json:"email"`
+			FirstName string `json:"first_name"`
+			LastName  string `json:"last_name"`
+		}
+
+		err = json.NewDecoder(r.Body).Decode(&updateUser)
+		if err != nil {
+			errors.ErrorRes(w, err, http.StatusBadRequest)
+			return
+		}
+
+		// Create the user object with the data from the client
+		user := &models.User{
+			UserID:    userId,
+			Email:     updateUser.Email,
+			FirstName: updateUser.FirstName,
+			LastName:  updateUser.LastName,
+		}
 
 		updatedUser, err := h.authUC.UpdateUser(r.Context(), user)
 		if err != nil {

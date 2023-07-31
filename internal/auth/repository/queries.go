@@ -13,10 +13,11 @@ const (
 									FROM users
 									WHERE user_id = $1`
 	updateUserQuery = `UPDATE users 
-								SET email COALESCE(NULLIF($1, ""), email),
-								firs_name COALESCE(NULLIF($2, ""), firs_name),
-								last_name COALESCE(NULLIF($3, ""), last_name),
-								updated_at = now()
-								WHERE user_id = $4`
+										SET email = COALESCE(NULLIF($1, ''), email),
+												first_name = COALESCE(NULLIF($2, ''), first_name),
+												last_name = COALESCE(NULLIF($3, ''), last_name),
+												updated_at = now()
+										WHERE user_id = $4
+										RETURNING *`
 	deleteUserQuery = `DELETE FROM users WHERE user_id = $1`
 )
