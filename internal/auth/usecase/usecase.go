@@ -23,10 +23,10 @@ func NewAuthUC(cfg *config.Config, authRepo auth.Repository, logger logger.ZapLo
 }
 
 func (u *authUC) Register(ctx context.Context, user *models.User) (*models.User, error) {
-	existsUser, err := u.authRepo.FindByEmail(ctx, user)
-	if existsUser != nil || err != nil {
-		return nil, errors.New("Invalid credentials")
-	}
+	// existsUser, err := u.authRepo.FindByEmail(ctx, user)
+	// if existsUser != nil || err != nil {
+	// 	return nil, errors.New("Invalid credentials")
+	// }
 
 	user.Email = strings.ToLower(strings.TrimSpace(user.Email))
 	user.Password = strings.TrimSpace(user.Password)
