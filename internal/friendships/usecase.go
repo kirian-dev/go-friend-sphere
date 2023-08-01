@@ -1,4 +1,4 @@
-package comments
+package friendships
 
 import (
 	"context"
@@ -6,9 +6,9 @@ import (
 )
 
 type UseCase interface {
-	CreateComment(ctx context.Context, comment *models.Comment) (*models.Comment, error)
-	UpdateComment(ctx context.Context, comment *models.Comment) (*models.Comment, error)
-	DeleteComment(ctx context.Context, commentID int64) error
-	GetCommentByID(ctx context.Context, commentID int64) (*models.CommentWithUser, error)
-	GetCommentsByPostID(ctx context.Context, postID int64) ([]*models.CommentWithUser, error)
+	CreateFriendship(ctx context.Context, friendship *models.Friendship) (*models.Friendship, error)
+	UpdateFriendship(ctx context.Context, friendship *models.Friendship) (*models.Friendship, error)
+	DeleteFriendship(ctx context.Context, friendshipID int64) error
+	GetFriendshipByID(ctx context.Context, friendshipID int64) (*models.FriendshipWithFriend, error)
+	GetFriendshipsByUserID(ctx context.Context, userID int64) ([]*models.FriendshipWithFriend, error)
 }
