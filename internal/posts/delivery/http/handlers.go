@@ -65,7 +65,7 @@ func (h *postsHandlers) UpdatePost() http.HandlerFunc {
 		}
 
 		post := &models.Post{
-			PostId:   postId,
+			PostID:   postId,
 			Content:  updatePost.Content,
 			ImageUrl: updatePost.ImageUrl,
 		}

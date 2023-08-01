@@ -29,7 +29,7 @@ func (r *postsRepo) CreatePost(ctx context.Context, post *models.Post) (*models.
 
 func (r *postsRepo) UpdatePost(ctx context.Context, post *models.Post) (*models.Post, error) {
 	updatedPost := &models.Post{}
-	if err := r.db.GetContext(ctx, updatedPost, updatePostQuery, &post.Content, &post.ImageUrl, &post.PostId); err != nil {
+	if err := r.db.GetContext(ctx, updatedPost, updatePostQuery, &post.Content, &post.ImageUrl, &post.PostID); err != nil {
 		return nil, errors.Wrap(err, "post repository, Update post")
 	}
 

@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Post struct {
-	PostId     int64     `json:"post_id" db:"post_id"`
+	PostID     int64     `json:"post_id" db:"post_id"`
 	Content    string    `json:"content"`
 	UserId     int64     `json:"user_id" db:"user_id"`
 	UpdateAt   time.Time `json:"updated_at" db:"updated_at"`

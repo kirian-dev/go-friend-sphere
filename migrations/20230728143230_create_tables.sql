@@ -36,10 +36,33 @@ CREATE TABLE post_likes (
   FOREIGN KEY (post_id) REFERENCES posts (post_id)
 );
 
+CREATE TABLE comments (
+  comment_id serial PRIMARY KEY,
+  message TEXT NOT NULL CHECK (message <> ''),
+  post_id int NOT NULL,
+  user_id int NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users (user_id),
+  FOREIGN KEY (post_id) REFERENCES posts (post_id)
+);
+
+CREATE TABLE friendships (
+  friendship_id serial PRIMARY KEY,
+  status TEXT NOT NULL CHECK (status <> ''),
+  friend_id int NOT NULL,
+  user_id int NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users (user_id),
+  FOREIGN KEY (friend_id) REFERENCES users (user_id)
+);
+
 -- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE IF EXISTS post_likes;
+DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS users;
 
