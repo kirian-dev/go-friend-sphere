@@ -11,4 +11,5 @@ type Repository interface {
 	DeleteMessage(ctx context.Context, messageID int64) error
 	GetMessageByID(ctx context.Context, messageID int64) (*models.Message, error)
 	GetMessagesByUserID(ctx context.Context, userID int64) ([]*models.Message, error)
+	ReadMessage(ctx context.Context, messageID int64) error
 }

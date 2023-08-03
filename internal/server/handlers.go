@@ -10,6 +10,9 @@ import (
 	friendshipsHttp "go-friend-sphere/internal/friendships/delivery/http"
 	friendshipsRepository "go-friend-sphere/internal/friendships/repository"
 	friendshipsUsecase "go-friend-sphere/internal/friendships/usecase"
+	messagesHttp "go-friend-sphere/internal/messages/delivery/http"
+	messagesRepository "go-friend-sphere/internal/messages/repository"
+	messagesUsecase "go-friend-sphere/internal/messages/usecase"
 	postsHttp "go-friend-sphere/internal/posts/delivery/http"
 	postsRepository "go-friend-sphere/internal/posts/repository"
 	postsUsecase "go-friend-sphere/internal/posts/usecase"
@@ -27,18 +30,21 @@ func (s *Server) Handlers() error {
 	postsRepo := postsRepository.NewPostsRepo(s.db)
 	commentsRepo := commentsRepository.NewCommentsRepo(s.db)
 	friendshipsRepo := friendshipsRepository.NewFriendshipRepo(s.db)
+	messagesRepo := messagesRepository.NewMessageRepo(s.db)
 
 	// useCases
 	authUC := authUsecase.NewAuthUC(s.cfg, authRepo, s.logger)
 	postsUC := postsUsecase.NewPostsUC(s.cfg, s.logger, postsRepo)
 	commentsUC := commentsUsecase.NewCommentsUC(s.cfg, s.logger, commentsRepo)
 	friendshipsUC := friendshipsUsecase.NewFriendshipsUC(s.cfg, s.logger, friendshipsRepo)
+	messagesUC := messagesUsecase.NewMessagesUC(s.cfg, s.logger, messagesRepo)
 
 	// Handlers
 	authHandlers := authHttp.NewAuthHandlers(s.cfg, authUC, s.logger)
 	postsHandlers := postsHttp.NewPostsHandlers(s.cfg, s.logger, postsUC)
 	commentsHandlers := commentsHttp.NewCommentsHandlers(s.cfg, s.logger, commentsUC)
 	friendshipsHandlers := friendshipsHttp.NewFriendshipsHandlers(s.cfg, s.logger, friendshipsUC)
+	messagesHandlers := messagesHttp.NewMessagesHandlers(s.cfg, s.logger, messagesUC)
 
 	r.Route("/api/v1", func(r chi.Router) {
 		// Register the "/auth" route group
@@ -52,7 +58,10 @@ func (s *Server) Handlers() error {
 			commentsHttp.CommentsRoutes(r, commentsHandlers)
 		})
 		r.Route("/friendships", func(r chi.Router) {
-			friendshipsHttp.CommentsRoutes(r, friendshipsHandlers)
+			friendshipsHttp.FriendshipsRoutes(r, friendshipsHandlers)
+		})
+		r.Route("/messages", func(r chi.Router) {
+			messagesHttp.MessagesRoutes(r, messagesHandlers)
 		})
 	})
 

@@ -3,7 +3,7 @@ package http
 import (
 	"encoding/json"
 	"go-friend-sphere/config"
-	"go-friend-sphere/internal/friendships"
+	"go-friend-sphere/internal/messages"
 	"go-friend-sphere/internal/models"
 	"go-friend-sphere/pkg/errors"
 	"go-friend-sphere/pkg/helpers"
@@ -14,87 +14,87 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type friendshipsHandlers struct {
-	cfg           *config.Config
-	logger        logger.ZapLogger
-	friendshipsUC friendships.UseCase
+type messagesHandlers struct {
+	cfg        *config.Config
+	logger     logger.ZapLogger
+	messagesUC messages.UseCase
 }
 
-func NewFriendshipsHandlers(cfg *config.Config, logger logger.ZapLogger, friendshipsUC friendships.UseCase) friendships.Handlers {
-	return &friendshipsHandlers{cfg: cfg, logger: logger, friendshipsUC: friendshipsUC}
+func NewMessagesHandlers(cfg *config.Config, logger logger.ZapLogger, messagesUC messages.UseCase) messages.Handlers {
+	return &messagesHandlers{cfg: cfg, logger: logger, messagesUC: messagesUC}
 }
 
-func (h *friendshipsHandlers) CreateFriendship() http.HandlerFunc {
+func (h *messagesHandlers) CreateMessage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		friendship := &models.Friendship{}
+		message := &models.Message{}
 
-		if err := helpers.ReadRequest(r, friendship); err != nil {
+		if err := helpers.ReadRequest(r, message); err != nil {
 			helpers.LogError(h.logger, err)
 			errors.ErrorRes(w, err, http.StatusInternalServerError)
 			return
 		}
-		if friendship.UserID == friendship.FriendID {
+		if message.RecipientID == message.SenderID {
 			errors.ErrorRes(w, error(http.ErrBodyNotAllowed), http.StatusBadRequest)
 			return
 		}
 
-		createdFriendship, err := h.friendshipsUC.CreateFriendship(r.Context(), friendship)
+		createdMessage, err := h.messagesUC.CreateMessage(r.Context(), message)
 		if err != nil {
 			helpers.LogError(h.logger, err)
 			errors.ErrorRes(w, err, http.StatusBadRequest)
 			return
 		}
-		helpers.WriteResponse(w, http.StatusCreated, createdFriendship)
+		helpers.WriteResponse(w, http.StatusCreated, createdMessage)
 	}
 }
 
-func (h *friendshipsHandlers) UpdateFriendship() http.HandlerFunc {
+func (h *messagesHandlers) UpdateMessage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		FriendshipIdStr := chi.URLParam(r, "friendshipId")
-		FriendshipId, err := strconv.ParseInt(FriendshipIdStr, 10, 64)
+		messageIdStr := chi.URLParam(r, "messageId")
+		messageId, err := strconv.ParseInt(messageIdStr, 10, 64)
 		if err != nil {
 			errors.ErrorRes(w, err, http.StatusInternalServerError)
 			return
 		}
-		var updateFriendship struct {
-			Status string `json:"status"`
+		var updateMessage struct {
+			Message string `json:"message"`
 		}
 
-		err = json.NewDecoder(r.Body).Decode(&updateFriendship)
+		err = json.NewDecoder(r.Body).Decode(&updateMessage)
 		if err != nil {
 			errors.ErrorRes(w, err, http.StatusBadRequest)
 			return
 		}
 
-		friendship := &models.Friendship{
-			FriendshipID: FriendshipId,
-			Status:       updateFriendship.Status,
+		message := &models.Message{
+			MessageID: messageId,
+			Message:   updateMessage.Message,
 		}
 
-		updatedFriendship, err := h.friendshipsUC.UpdateFriendship(r.Context(), friendship)
+		updatedMessage, err := h.messagesUC.UpdateMessage(r.Context(), message)
 		if err != nil {
 			helpers.LogError(h.logger, err)
 			errors.ErrorRes(w, err, http.StatusBadRequest)
 			return
 		}
 
-		if updatedFriendship == nil {
+		if updatedMessage == nil {
 			helpers.WriteResponse(w, http.StatusNoContent, nil)
 		} else {
-			helpers.WriteResponse(w, http.StatusOK, updatedFriendship)
+			helpers.WriteResponse(w, http.StatusOK, updatedMessage)
 		}
 	}
 }
 
-func (h *friendshipsHandlers) DeleteFriendship() http.HandlerFunc {
+func (h *messagesHandlers) DeleteMessage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		friendshipIdStr := chi.URLParam(r, "friendshipId")
-		friendshipId, err := strconv.ParseInt(friendshipIdStr, 10, 64)
+		messageIdStr := chi.URLParam(r, "messageId")
+		messageId, err := strconv.ParseInt(messageIdStr, 10, 64)
 		if err != nil {
 			errors.ErrorRes(w, err, http.StatusInternalServerError)
 			return
 		}
-		err = h.friendshipsUC.DeleteFriendship(r.Context(), friendshipId)
+		err = h.messagesUC.DeleteMessage(r.Context(), messageId)
 		if err != nil {
 			helpers.LogError(h.logger, err)
 			errors.ErrorRes(w, err, http.StatusBadRequest)
@@ -106,27 +106,27 @@ func (h *friendshipsHandlers) DeleteFriendship() http.HandlerFunc {
 
 }
 
-func (h *friendshipsHandlers) GetFriendshipByID() http.HandlerFunc {
+func (h *messagesHandlers) GetMessageByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		friendshipIdStr := chi.URLParam(r, "friendshipId")
-		friendshipId, err := strconv.ParseInt(friendshipIdStr, 10, 64)
+		messageIdStr := chi.URLParam(r, "messageId")
+		messageId, err := strconv.ParseInt(messageIdStr, 10, 64)
 		if err != nil {
 			errors.ErrorRes(w, err, http.StatusInternalServerError)
 			return
 		}
 
-		foundedFriendship, err := h.friendshipsUC.GetFriendshipByID(r.Context(), friendshipId)
+		foundedMessage, err := h.messagesUC.GetMessageByID(r.Context(), messageId)
 		if err != nil {
 			helpers.LogError(h.logger, err)
 			errors.ErrorRes(w, err, http.StatusBadRequest)
 			return
 		}
 
-		helpers.WriteResponse(w, http.StatusOK, foundedFriendship)
+		helpers.WriteResponse(w, http.StatusOK, foundedMessage)
 	}
 }
 
-func (h *friendshipsHandlers) GetFriendshipsByUserID() http.HandlerFunc {
+func (h *messagesHandlers) GetMessagesByUserID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userIdStr := chi.URLParam(r, "userId")
 		userId, err := strconv.ParseInt(userIdStr, 10, 64)
@@ -134,13 +134,13 @@ func (h *friendshipsHandlers) GetFriendshipsByUserID() http.HandlerFunc {
 			errors.ErrorRes(w, err, http.StatusInternalServerError)
 			return
 		}
-		friendshipsList, err := h.friendshipsUC.GetFriendshipsByUserID(r.Context(), userId)
+		messagesList, err := h.messagesUC.GetMessagesByUserID(r.Context(), userId)
 		if err != nil {
 			helpers.LogError(h.logger, err)
 			errors.ErrorRes(w, err, http.StatusBadRequest)
 			return
 		}
 
-		helpers.WriteResponse(w, http.StatusOK, friendshipsList)
+		helpers.WriteResponse(w, http.StatusOK, messagesList)
 	}
 }

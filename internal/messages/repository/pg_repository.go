@@ -55,8 +55,6 @@ func (r *messagesRepo) DeleteMessage(ctx context.Context, MessageID int64) error
 }
 
 func (r *messagesRepo) GetMessageByID(ctx context.Context, messageID int64) (*models.Message, error) {
-	// ... (your implementation)
-	// Handle the error from the scan operation
 	message := &models.Message{}
 	err := r.db.QueryRowContext(ctx, getMessageByID, messageID).Scan(message)
 	if err != nil {
@@ -66,8 +64,6 @@ func (r *messagesRepo) GetMessageByID(ctx context.Context, messageID int64) (*mo
 }
 
 func (r *messagesRepo) GetMessagesByUserID(ctx context.Context, userID int64) ([]*models.Message, error) {
-	// ... (your implementation)
-	// Handle the error from the rows.Scan operation
 	messagesList := []*models.Message{}
 
 	if err := r.db.SelectContext(ctx, &messagesList, getMessagesByUserID, userID); err != nil {
@@ -75,4 +71,12 @@ func (r *messagesRepo) GetMessagesByUserID(ctx context.Context, userID int64) ([
 	}
 
 	return messagesList, nil
+}
+
+func (r *messagesRepo) ReadMessage(ctx context.Context, messageID int64) error {
+	_, err := r.db.ExecContext(ctx, readMessage, messageID)
+	if err != nil {
+		return errors.Wrap(err, "Message repository, Read Message")
+	}
+	return nil
 }

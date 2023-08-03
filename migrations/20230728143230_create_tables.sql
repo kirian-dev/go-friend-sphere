@@ -58,6 +58,18 @@ CREATE TABLE friendships (
   FOREIGN KEY (friend_id) REFERENCES users (user_id)
 );
 
+CREATE TABLE messages (
+  message_id serial PRIMARY KEY,
+  message TEXT NOT NULL CHECK (status <> ''),
+  sender_id int NOT NULL,
+  recipient_id int NOT NULL,
+  sent_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  read_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (recipient_id) REFERENCES users (user_id),
+  FOREIGN KEY (ender_id) REFERENCES users (user_id)
+);
+
 -- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin
@@ -65,5 +77,6 @@ DROP TABLE IF EXISTS post_likes;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS messages;
 
 -- +goose StatementEnd

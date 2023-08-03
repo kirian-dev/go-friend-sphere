@@ -1,15 +1,15 @@
 package http
 
 import (
-	"go-friend-sphere/internal/friendships"
+	"go-friend-sphere/internal/messages"
 
 	"github.com/go-chi/chi/v5"
 )
 
-func CommentsRoutes(r chi.Router, h friendships.Handlers) {
-	r.Post("/", h.CreateFriendship())
-	r.Put("/{friendshipId}", h.UpdateFriendship())
-	r.Delete("/{friendshipId}", h.DeleteFriendship())
-	r.Get("/{friendshipId}", h.GetFriendshipByID())
-	r.Get("/user/{userId}", h.GetFriendshipsByUserID())
+func MessagesRoutes(r chi.Router, h messages.Handlers) {
+	r.Post("/", h.CreateMessage())
+	r.Put("/{messageId}", h.UpdateMessage())
+	r.Delete("/{messageId}", h.DeleteMessage())
+	r.Get("/{messageId}", h.GetMessageByID())
+	r.Get("/user/{userId}", h.GetMessagesByUserID())
 }

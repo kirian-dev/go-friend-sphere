@@ -2,7 +2,7 @@ package repository
 
 const (
 	createMessage = `INSERT INTO messages (message, sender_id, recipient_id, sent_at, read_at, updated_at) 
-											VALUES ($1, $2, $3, now(), NULL) 
+											VALUES ($1, $2, $3, now(), NULL, now()) 
 											RETURNING *`
 	getMessagesByUserID = `
 											SELECT m.message_id, m.sender_id, m.recipient_id, m.status, m.created_at, m.updated_at, u.first_name AS recipient_first_name, u.last_name AS recipient_last_name
@@ -20,4 +20,5 @@ const (
 										WHERE message_id = $2
 										RETURNING *`
 	deleteMessageQuery = `DELETE FROM messages WHERE message_id = $1`
+	readMessage        = `UPDATE messages SET read_at = NOW() WHERE message_id = $1`
 )

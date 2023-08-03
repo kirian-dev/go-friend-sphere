@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func CommentsRoutes(r chi.Router, h friendships.Handlers) {
+func FriendshipsRoutes(r chi.Router, h friendships.Handlers) {
 	r.Post("/", h.CreateFriendship())
 	r.Put("/{friendshipId}", h.UpdateFriendship())
 	r.Delete("/{friendshipId}", h.DeleteFriendship())
