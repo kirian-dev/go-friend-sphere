@@ -122,7 +122,28 @@ func (h *postsHandlers) GetPostById() http.HandlerFunc {
 
 func (h *postsHandlers) GetPosts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		postsList, err := h.postsUC.GetPosts(r.Context())
+		offsetStr := r.URL.Query().Get("offset")
+		limitStr := r.URL.Query().Get("limit")
+		query := r.URL.Query().Get("search")
+		sort := r.URL.Query().Get("sort")
+
+		offset, _ := strconv.Atoi(offsetStr)
+		limit, _ := strconv.Atoi(limitStr)
+		if offset < 0 {
+			offset = 0
+		}
+		if limit <= 0 {
+			limit = 10
+		}
+
+		params := models.GetPostsParams{
+			Offset: offset,
+			Limit:  limit,
+			Query:  query,
+			Sort:   sort,
+		}
+
+		postsList, err := h.postsUC.GetPosts(r.Context(), params)
 		if err != nil {
 			helpers.LogError(h.logger, err)
 			errors.ErrorRes(w, err, http.StatusBadRequest)

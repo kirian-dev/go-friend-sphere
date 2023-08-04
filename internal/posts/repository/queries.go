@@ -5,7 +5,10 @@ const (
 											VALUES ($1, $2, $3, $4, now(), now()) 
 											RETURNING *`
 	getPosts = `SELECT content, user_id, image_url, likes_count, created_at, updated_at , post_id
-											FROM posts`
+											FROM posts
+											WHERE content ILIKE '%' || $1 || '%'
+											ORDER BY $2 DESC
+											LIMIT $3 OFFSET $4`
 	getPostById = `SELECT content, user_id, image_url, likes_count, created_at, updated_at 
 									FROM posts
 									WHERE post_id = $1`

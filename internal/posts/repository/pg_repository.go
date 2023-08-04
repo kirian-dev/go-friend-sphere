@@ -62,10 +62,10 @@ func (r *postsRepo) GetPostById(ctx context.Context, postId int64) (*models.Post
 	return p, nil
 }
 
-func (r *postsRepo) GetPosts(ctx context.Context) ([]*models.Post, error) {
+func (r *postsRepo) GetPosts(ctx context.Context, params models.GetPostsParams) ([]*models.Post, error) {
 	postsList := []*models.Post{}
 
-	if err := r.db.SelectContext(ctx, &postsList, getPosts); err != nil {
+	if err := r.db.SelectContext(ctx, &postsList, getPosts, params.Query, params.Sort, params.Limit, params.Offset); err != nil {
 		return nil, errors.Wrap(err, "post repository, Get posts")
 	}
 

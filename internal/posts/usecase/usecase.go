@@ -45,8 +45,8 @@ func (u *postsUC) GetPostById(ctx context.Context, postId int64) (*models.Post, 
 	return u.postsRepo.GetPostById(ctx, postId)
 }
 
-func (u *postsUC) GetPosts(ctx context.Context) ([]*models.Post, error) {
-	return u.postsRepo.GetPosts(ctx)
+func (u *postsUC) GetPosts(ctx context.Context, params models.GetPostsParams) ([]*models.Post, error) {
+	return u.postsRepo.GetPosts(ctx, params)
 }
 
 func (u *postsUC) ToggleLikePost(ctx context.Context, postId, userId int64) (bool, error) {

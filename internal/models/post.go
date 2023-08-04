@@ -11,3 +11,10 @@ type Post struct {
 	LikesCount int64     `json:"likes_count" db:"likes_count"`
 	ImageUrl   string    `json:"image_url" db:"image_url"`
 }
+
+type GetPostsParams struct {
+	Offset int    `json:"offset"`
+	Limit  int    `json:"limit"`
+	Query  string `json:"query"`
+	Sort   string `json:"sort"`
+}

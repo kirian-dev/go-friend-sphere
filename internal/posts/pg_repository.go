@@ -10,7 +10,7 @@ type Repository interface {
 	UpdatePost(ctx context.Context, post *models.Post) (*models.Post, error)
 	DeletePost(ctx context.Context, postId int64) error
 	GetPostById(ctx context.Context, postId int64) (*models.Post, error)
-	GetPosts(ctx context.Context) ([]*models.Post, error)
+	GetPosts(ctx context.Context, params models.GetPostsParams) ([]*models.Post, error)
 	HasLikedPost(ctx context.Context, postId, userId int64) (bool, error)
 	LikePost(ctx context.Context, postId, userId int64) error
 	RemoveLike(ctx context.Context, postId, userId int64) error
