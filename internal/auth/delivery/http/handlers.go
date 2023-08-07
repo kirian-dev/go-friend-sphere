@@ -33,6 +33,11 @@ func (h *authHandlers) Register() http.HandlerFunc {
 			return
 		}
 
+		if err := helpers.Validate(r.Context(), user); err != nil {
+			errors.ErrorRes(w, err, http.StatusBadRequest)
+			return
+		}
+
 		createdUser, err := h.authUC.Register(r.Context(), user)
 		if err != nil {
 			helpers.LogError(h.logger, err)
@@ -58,8 +63,8 @@ func (h *authHandlers) Register() http.HandlerFunc {
 
 func (h *authHandlers) Login() http.HandlerFunc {
 	type Login struct {
-		Email    string `json:"email" db:"email"`
-		Password string `json:"password" db:"password"`
+		Email    string `json:"email" db:"email" validate:"required,email,omitempty,lte=60"`
+		Password string `json:"password" db:"password" validate:"required,omitempty,gte=6"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -67,6 +72,11 @@ func (h *authHandlers) Login() http.HandlerFunc {
 		if err := helpers.ReadRequest(r, login); err != nil {
 			helpers.LogError(h.logger, err)
 			errors.ErrorRes(w, err, http.StatusInternalServerError)
+			return
+		}
+
+		if err := helpers.Validate(r.Context(), login); err != nil {
+			errors.ErrorRes(w, err, http.StatusBadRequest)
 			return
 		}
 
@@ -140,13 +150,18 @@ func (h *authHandlers) UpdateUser() http.HandlerFunc {
 		}
 
 		var updateUser struct {
-			Email     string `json:"email"`
-			FirstName string `json:"first_name"`
-			LastName  string `json:"last_name"`
+			Email     string `json:"email" validate:"required,email,omitempty,lte=60"`
+			FirstName string `json:"first_name" validate:"required,omitempty,lte=60"`
+			LastName  string `json:"last_name" validate:"required,omitempty,lte=60"`
 		}
 
 		err = json.NewDecoder(r.Body).Decode(&updateUser)
 		if err != nil {
+			errors.ErrorRes(w, err, http.StatusBadRequest)
+			return
+		}
+
+		if err := helpers.Validate(r.Context(), updateUser); err != nil {
 			errors.ErrorRes(w, err, http.StatusBadRequest)
 			return
 		}

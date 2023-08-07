@@ -9,7 +9,7 @@ type Post struct {
 	UpdateAt   time.Time `json:"updated_at" db:"updated_at"`
 	Created_at time.Time `json:"created_at" db:"created_at"`
 	LikesCount int64     `json:"likes_count" db:"likes_count" validate:"required"`
-	ImageUrl   string    `json:"image_url" db:"image_url" validate:"omitempty, lte=512, url"`
+	ImageUrl   string    `json:"image_url" db:"image_url" validate:"omitempty,lte=512,url"`
 }
 
 type GetPostsParams struct {

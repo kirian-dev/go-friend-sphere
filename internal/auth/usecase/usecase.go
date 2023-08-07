@@ -5,11 +5,10 @@ import (
 	"go-friend-sphere/config"
 	"go-friend-sphere/internal/auth"
 	"go-friend-sphere/internal/models"
+	"go-friend-sphere/pkg/errors"
 	"go-friend-sphere/pkg/helpers"
 	"go-friend-sphere/pkg/logger"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 type authUC struct {
@@ -23,15 +22,15 @@ func NewAuthUC(cfg *config.Config, authRepo auth.Repository, logger logger.ZapLo
 }
 
 func (u *authUC) Register(ctx context.Context, user *models.User) (*models.User, error) {
-	// existsUser, err := u.authRepo.FindByEmail(ctx, user)
-	// if existsUser != nil || err != nil {
-	// 	return nil, errors.New("Invalid credentials")
-	// }
+	existsUser, err := u.authRepo.FindByEmail(ctx, user)
+	if existsUser != nil || err != nil {
+		return nil, errors.ErrEmailExists
+	}
 
 	user.Email = strings.ToLower(strings.TrimSpace(user.Email))
 	user.Password = strings.TrimSpace(user.Password)
 	if err := helpers.HashPassword(user); err != nil {
-		return nil, errors.New("Failed to hash password")
+		return nil, errors.ErrFailedToHashPassword
 	}
 
 	createdUser, err := u.authRepo.Register(ctx, user)
@@ -47,10 +46,10 @@ func (u *authUC) Register(ctx context.Context, user *models.User) (*models.User,
 func (u *authUC) Login(ctx context.Context, user *models.User) (*models.User, error) {
 	foundUser, err := u.authRepo.FindByEmail(ctx, user)
 	if err != nil {
-		return nil, err
+		return nil, errors.ErrInvalidCredentials
 	}
 	if err = helpers.ComparePasswords(foundUser, user.Password); err != nil {
-		return nil, errors.New("Invalid credentials")
+		return nil, errors.ErrInvalidCredentials
 	}
 
 	helpers.RemovePassword(foundUser)
@@ -72,7 +71,8 @@ func (u *authUC) UpdateUser(ctx context.Context, user *models.User) (*models.Use
 	}
 	updatedUser, err := u.authRepo.UpdateUser(ctx, user)
 	if err != nil {
-		return nil, errors.New("Error updating user: " + err.Error())
+		return nil, errors.NewErrorWithContext(err, "Update user failed:")
+
 	}
 
 	helpers.RemovePassword(updatedUser)

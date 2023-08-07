@@ -6,9 +6,9 @@ import (
 
 type User struct {
 	UserID            int64     `json:"user_id" db:"user_id"`
-	FirstName         string    `json:"first_name" db:"first_name" validate:"required, lte=30"`
-	LastName          string    `json:"last_name" db:"last_name" validate:"required, lte=30"`
-	Email             string    `json:"email" db:"email" validate:"required,email, lte=60, omitempty"`
+	FirstName         string    `json:"first_name" db:"first_name" validate:"required,lte=30"`
+	LastName          string    `json:"last_name" db:"last_name" validate:"required,lte=30"`
+	Email             string    `json:"email" db:"email" validate:"omitempty,email,lte=60"`
 	Password          string    `json:"password" db:"password" validate:"omitempty,required,gte=6"`
 	Role              string    `json:"role" db:"role"`
 	Phone             *string   `json:"phone" db:"phone" validate:"omitempty,lte=20"`

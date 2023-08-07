@@ -4,7 +4,7 @@ import "time"
 
 type Comment struct {
 	CommentID int64     `json:"comment_id" db:"comment_id"`
-	Message   string    `json:"message" db:"message" validate:"required, omitempty, lte=512"`
+	Message   string    `json:"message" db:"message" validate:"required,omitempty,lte=512"`
 	UserID    int64     `json:"user_id" db:"user_id" validate:"required"`
 	PostID    int64     `json:"post_id" db:"post_id" validate:"required"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
@@ -13,7 +13,7 @@ type Comment struct {
 
 type CommentWithUser struct {
 	CommentID int64     `json:"comment_id" db:"comment_id"`
-	Message   string    `json:"message" db:"message" validate:"required, omitempty, lte=512"`
+	Message   string    `json:"message" db:"message" validate:"required,omitempty,lte=512"`
 	UserID    int64     `json:"user_id" db:"user_id" validate:"required"`
 	PostID    int64     `json:"post_id" db:"post_id" validate:"required"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
