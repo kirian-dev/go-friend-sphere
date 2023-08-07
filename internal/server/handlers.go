@@ -13,6 +13,7 @@ import (
 	messagesHttp "go-friend-sphere/internal/messages/delivery/http"
 	messagesRepository "go-friend-sphere/internal/messages/repository"
 	messagesUsecase "go-friend-sphere/internal/messages/usecase"
+	"go-friend-sphere/internal/middleware"
 	postsHttp "go-friend-sphere/internal/posts/delivery/http"
 	postsRepository "go-friend-sphere/internal/posts/repository"
 	postsUsecase "go-friend-sphere/internal/posts/usecase"
@@ -46,22 +47,25 @@ func (s *Server) Handlers() error {
 	friendshipsHandlers := friendshipsHttp.NewFriendshipsHandlers(s.cfg, s.logger, friendshipsUC)
 	messagesHandlers := messagesHttp.NewMessagesHandlers(s.cfg, s.logger, messagesUC)
 
+	// Create an instance of the MiddlewareManager
+	middlewareManager := middleware.NewMiddlewareManager(authUC, s.cfg, s.logger)
+
 	r.Route("/api/v1", func(r chi.Router) {
 		// Register the "/auth" route group
 		r.Route("/auth", func(r chi.Router) {
-			authHttp.AuthRoutes(r, authHandlers)
+			authHttp.AuthRoutes(r, authHandlers, middlewareManager)
 		})
 		r.Route("/posts", func(r chi.Router) {
-			postsHttp.PostsRoutes(r, postsHandlers)
+			postsHttp.PostsRoutes(r, postsHandlers, middlewareManager)
 		})
 		r.Route("/comments", func(r chi.Router) {
-			commentsHttp.CommentsRoutes(r, commentsHandlers)
+			commentsHttp.CommentsRoutes(r, commentsHandlers, middlewareManager)
 		})
 		r.Route("/friendships", func(r chi.Router) {
-			friendshipsHttp.FriendshipsRoutes(r, friendshipsHandlers)
+			friendshipsHttp.FriendshipsRoutes(r, friendshipsHandlers, middlewareManager)
 		})
 		r.Route("/messages", func(r chi.Router) {
-			messagesHttp.MessagesRoutes(r, messagesHandlers)
+			messagesHttp.MessagesRoutes(r, messagesHandlers, middlewareManager)
 		})
 	})
 

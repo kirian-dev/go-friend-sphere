@@ -14,13 +14,20 @@ type authRepo struct {
 	db *sqlx.DB
 }
 
+const userRole = "user"
+
 func NewAuthRepo(db *sqlx.DB) auth.Repository {
 	return &authRepo{db: db}
 }
 
 func (r *authRepo) Register(ctx context.Context, user *models.User) (*models.User, error) {
+	// Set the default role to "user" if it is empty or not provided
+	if user.Role == "" {
+		user.Role = userRole
+	}
+
 	u := &models.User{}
-	if err := r.db.QueryRowxContext(ctx, createUser, user.Email, user.Password, user.FirstName, user.LastName).StructScan(u); err != nil {
+	if err := r.db.QueryRowxContext(ctx, createUser, user.Email, user.Password, user.FirstName, user.LastName, user.Role).StructScan(u); err != nil {
 		return nil, errors.Wrap(err, "auth repository, Register")
 	}
 

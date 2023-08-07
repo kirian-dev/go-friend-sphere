@@ -6,6 +6,7 @@ server:
   WriteTimeout: 10
   CtxDefaultTimeout: 12
   Debug: false
+  JwtSecretKey: mySecretKey
 
 postgres: 
   PostgresDbname: friend_sphere_db

@@ -22,6 +22,7 @@ type ServerConfig struct {
 	WriteTimeout      time.Duration
 	CtxDefaultTimeout time.Duration
 	Debug             bool
+	JwtSecretKey      string
 }
 
 type PostgresConfig struct {

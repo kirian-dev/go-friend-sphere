@@ -24,7 +24,6 @@ func NewAuthHandlers(cfg *config.Config, authUC auth.UseCase, logger logger.ZapL
 	return &authHandlers{cfg: cfg, authUC: authUC, logger: logger}
 }
 
-// Change the return type to http.HandlerFunc
 func (h *authHandlers) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := &models.User{}
@@ -41,7 +40,19 @@ func (h *authHandlers) Register() http.HandlerFunc {
 			return
 		}
 
-		helpers.WriteResponse(w, http.StatusCreated, createdUser)
+		token, err := helpers.GenerateJWTToken(createdUser.Email, createdUser.Role, h.cfg)
+		if err != nil {
+			helpers.LogError(h.logger, err)
+			errors.ErrorRes(w, err, http.StatusInternalServerError)
+			return
+		}
+
+		response := map[string]interface{}{
+			"user":  createdUser,
+			"token": token,
+		}
+
+		helpers.WriteResponse(w, http.StatusCreated, response)
 	}
 }
 
@@ -68,8 +79,20 @@ func (h *authHandlers) Login() http.HandlerFunc {
 			errors.ErrorRes(w, err, http.StatusBadRequest)
 			return
 		}
+		token, err := helpers.GenerateJWTToken(user.Email, user.Role, h.cfg)
+		if err != nil {
+			helpers.LogError(h.logger, err)
+			errors.ErrorRes(w, err, http.StatusInternalServerError)
+			return
+		}
 
-		helpers.WriteResponse(w, http.StatusOK, user)
+		// Append the token to the response
+		response := map[string]interface{}{
+			"user":  user,
+			"token": token,
+		}
+
+		helpers.WriteResponse(w, http.StatusOK, response)
 	}
 }
 
@@ -116,7 +139,6 @@ func (h *authHandlers) UpdateUser() http.HandlerFunc {
 			return
 		}
 
-		// Parse the request body to get the JSON data from the client
 		var updateUser struct {
 			Email     string `json:"email"`
 			FirstName string `json:"first_name"`
