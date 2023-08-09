@@ -24,6 +24,13 @@ func NewAuthHandlers(cfg *config.Config, authUC auth.UseCase, logger logger.ZapL
 	return &authHandlers{cfg: cfg, authUC: authUC, logger: logger}
 }
 
+// @Summary Register
+// @Description register new user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Success 201 {object} models.User
+// @Router /auth/register [post]
 func (h *authHandlers) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := &models.User{}
@@ -61,6 +68,13 @@ func (h *authHandlers) Register() http.HandlerFunc {
 	}
 }
 
+// @Summary Login
+// @Description user login
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /auth/login [post]
 func (h *authHandlers) Login() http.HandlerFunc {
 	type Login struct {
 		Email    string `json:"email" db:"email" validate:"required,email,omitempty,lte=60"`
@@ -106,6 +120,12 @@ func (h *authHandlers) Login() http.HandlerFunc {
 	}
 }
 
+// @Summary Get Users
+// @Description get a list of all users
+// @Tags Auth
+// @Produce json
+// @Success 200 {array} models.User
+// @Router /auth/users [get]
 func (h *authHandlers) GeUsers() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		usersList, err := h.authUC.GetUsers(r.Context())
@@ -119,6 +139,13 @@ func (h *authHandlers) GeUsers() http.HandlerFunc {
 	}
 }
 
+// @Summary Get User by ID
+// @Description get a user by ID
+// @Tags Auth
+// @Param userId path int true "User ID"
+// @Produce json
+// @Success 200 {object} models.User
+// @Router /auth/users/{userId} [get]
 func (h *authHandlers) GetUserById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userIdStr := chi.URLParam(r, "userId")
@@ -140,6 +167,14 @@ func (h *authHandlers) GetUserById() http.HandlerFunc {
 	}
 }
 
+// @Summary Update User
+// @Description update a user's details
+// @Tags Auth
+// @Param userId path int true "User ID"
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.User
+// @Router /auth/users/{userId} [put]
 func (h *authHandlers) UpdateUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userIdStr := chi.URLParam(r, "userId")
@@ -185,6 +220,13 @@ func (h *authHandlers) UpdateUser() http.HandlerFunc {
 	}
 }
 
+// @Summary Delete User
+// @Description delete a user
+// @Tags Auth
+// @Param userId path int true "User ID"
+// @Produce json
+// @Success 204 "No Content"
+// @Router /auth/users/{userId} [delete]
 func (h *authHandlers) DeleteUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userIdStr := chi.URLParam(r, "userId")

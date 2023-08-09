@@ -1,6 +1,7 @@
 package server
 
 import (
+	_ "go-friend-sphere/docs"
 	authHttp "go-friend-sphere/internal/auth/delivery/http"
 	authRepository "go-friend-sphere/internal/auth/repository"
 	authUsecase "go-friend-sphere/internal/auth/usecase"
@@ -20,6 +21,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func (s *Server) Handlers() error {
@@ -69,6 +71,7 @@ func (s *Server) Handlers() error {
 		})
 	})
 
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
 	http.Handle("/", r)
 	return nil
 }

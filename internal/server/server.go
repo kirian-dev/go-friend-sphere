@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	config "go-friend-sphere/config"
+	_ "go-friend-sphere/docs"
 	"go-friend-sphere/pkg/logger"
 	"net/http"
 	"os"

@@ -1,0 +1,639 @@
+basePath: /
+definitions:
+  models.Comment:
+    properties:
+      comment_id:
+        type: integer
+      created_at:
+        type: string
+      message:
+        maxLength: 512
+        type: string
+      post_id:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - message
+    - post_id
+    - user_id
+    type: object
+  models.Friendship:
+    properties:
+      created_at:
+        type: string
+      friend_id:
+        type: integer
+      friendship_id:
+        type: integer
+      status:
+        maxLength: 24
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - friend_id
+    - status
+    - user_id
+    type: object
+  models.Message:
+    properties:
+      message:
+        maxLength: 512
+        type: string
+      message_id:
+        type: integer
+      read_at:
+        type: string
+      recipient_id:
+        type: integer
+      sender_id:
+        type: integer
+      sent_at:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - message
+    - recipient_id
+    - sender_id
+    type: object
+  models.Post:
+    properties:
+      content:
+        maxLength: 1024
+        type: string
+      created_at:
+        type: string
+      image_url:
+        maxLength: 512
+        type: string
+      likes_count:
+        type: integer
+      post_id:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - likes_count
+    - user_id
+    type: object
+  models.User:
+    properties:
+      birthday:
+        maxLength: 10
+        type: string
+      city:
+        maxLength: 24
+        type: string
+      created_at:
+        type: string
+      email:
+        maxLength: 60
+        type: string
+      first_name:
+        maxLength: 30
+        type: string
+      last_login_at:
+        type: string
+      last_name:
+        maxLength: 30
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone:
+        maxLength: 20
+        type: string
+      profile_picture_url:
+        maxLength: 512
+        type: string
+      role:
+        type: string
+      update_at:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - first_name
+    - last_name
+    - password
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: polozenko.kirill.job@gmail.com
+  description: Pet-project GO-Friend-Sphere REST API
+  title: GO-Friend-Sphere
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: user login
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: register new user
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Register
+      tags:
+      - Auth
+  /auth/users:
+    get:
+      description: get a list of all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: Get Users
+      tags:
+      - Users
+  /auth/users/{userId}:
+    delete:
+      description: delete a user
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete User
+      tags:
+      - Auth
+    get:
+      description: get a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Get User by ID
+      tags:
+      - Auth
+    put:
+      consumes:
+      - application/json
+      description: update a user's details
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Update User
+      tags:
+      - auth
+  /comments:
+    post:
+      consumes:
+      - application/json
+      description: create a new comment
+      parameters:
+      - description: Comment object to be created
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/models.Comment'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Comment'
+      summary: Create Comment
+      tags:
+      - Comments
+  /comments/{commentId}:
+    delete:
+      description: delete a comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: commentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete Comment
+      tags:
+      - Comments
+    get:
+      description: get a comment by ID
+      parameters:
+      - description: Comment ID
+        in: path
+        name: commentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+      summary: Get Comment by ID
+      tags:
+      - Comments
+    put:
+      consumes:
+      - application/json
+      description: update a comment's message
+      parameters:
+      - description: Comment ID
+        in: path
+        name: commentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+      summary: Update Comment
+      tags:
+      - Comments
+  /comments/post/{postId}:
+    get:
+      description: get a list of comments by post ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Comment'
+            type: array
+      summary: Get Comments by Post ID
+      tags:
+      - Comments
+  /friendships:
+    post:
+      consumes:
+      - application/json
+      description: create a new friendship
+      parameters:
+      - description: Friendship object to be created
+        in: body
+        name: friendship
+        required: true
+        schema:
+          $ref: '#/definitions/models.Friendship'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Friendship'
+      summary: Create Friendship
+      tags:
+      - Friendships
+  /friendships/{friendshipId}:
+    delete:
+      description: delete a friendship
+      parameters:
+      - description: Friendship ID
+        in: path
+        name: friendshipId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete Friendship
+      tags:
+      - Friendships
+    get:
+      description: get a friendship by ID
+      parameters:
+      - description: Friendship ID
+        in: path
+        name: friendshipId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Friendship'
+      summary: Get Friendship by ID
+      tags:
+      - Friendships
+    put:
+      consumes:
+      - application/json
+      description: update a friendship's status
+      parameters:
+      - description: Friendship ID
+        in: path
+        name: friendshipId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Friendship'
+      summary: Update Friendship
+      tags:
+      - Friendships
+  /friendships/user/{userId}:
+    get:
+      description: get a list of friendships by user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Friendship'
+            type: array
+      summary: Get Friendships by User ID
+      tags:
+      - Friendships
+  /messages:
+    post:
+      consumes:
+      - application/json
+      description: create a new message
+      parameters:
+      - description: Message object to be created
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/models.Message'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Message'
+      summary: Create Message
+      tags:
+      - Messages
+  /messages/{messageId}:
+    delete:
+      description: delete a message
+      parameters:
+      - description: Message ID
+        in: path
+        name: messageId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete Message
+      tags:
+      - Messages
+    get:
+      description: get a message by ID
+      parameters:
+      - description: Message ID
+        in: path
+        name: messageId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Message'
+      summary: Get Message by ID
+      tags:
+      - Messages
+    put:
+      consumes:
+      - application/json
+      description: update a message
+      parameters:
+      - description: Message ID
+        in: path
+        name: messageId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Message'
+      summary: Update Message
+      tags:
+      - Messages
+  /messages/user/{userId}:
+    get:
+      description: get a list of messages by user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Message'
+            type: array
+      summary: Get Messages by User ID
+      tags:
+      - Messages
+  /posts:
+    get:
+      description: get a list of posts
+      parameters:
+      - description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - description: Limit for pagination
+        in: query
+        name: limit
+        type: integer
+      - description: Search query
+        in: query
+        name: search
+        type: string
+      - description: Sorting order
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Post'
+            type: array
+      summary: Get Posts
+      tags:
+      - Posts
+    post:
+      consumes:
+      - application/json
+      description: create a new post
+      parameters:
+      - description: Post object to be created
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/models.Post'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Post'
+      summary: Create Post
+      tags:
+      - Posts
+  /posts/{postId}:
+    delete:
+      description: delete a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete Post
+      tags:
+      - Posts
+    get:
+      description: get a post by ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Post'
+      summary: Get Post by ID
+      tags:
+      - Posts
+    put:
+      consumes:
+      - application/json
+      description: update a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: postId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Post'
+      summary: Update Post
+      tags:
+      - Posts
+swagger: "2.0"

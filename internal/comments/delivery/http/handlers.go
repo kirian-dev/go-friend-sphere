@@ -24,6 +24,14 @@ func NewCommentsHandlers(cfg *config.Config, logger logger.ZapLogger, commentsUC
 	return &commentsHandlers{cfg: cfg, logger: logger, commentsUC: commentsUC}
 }
 
+// @Summary Create Comment
+// @Description create a new comment
+// @Tags Comments
+// @Accept json
+// @Produce json
+// @Param comment body models.Comment true "Comment object to be created"
+// @Success 201 {object} models.Comment
+// @Router /comments [post]
 func (h *commentsHandlers) CreateComment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		comment := &models.Comment{}
@@ -31,6 +39,11 @@ func (h *commentsHandlers) CreateComment() http.HandlerFunc {
 		if err := helpers.ReadRequest(r, comment); err != nil {
 			helpers.LogError(h.logger, err)
 			errors.ErrorRes(w, err, http.StatusInternalServerError)
+			return
+		}
+
+		if err := helpers.Validate(r.Context(), comment); err != nil {
+			errors.ErrorRes(w, err, http.StatusBadRequest)
 			return
 		}
 
@@ -44,6 +57,14 @@ func (h *commentsHandlers) CreateComment() http.HandlerFunc {
 	}
 }
 
+// @Summary Update Comment
+// @Description update a comment's message
+// @Tags Comments
+// @Param commentId path int true "Comment ID"
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.Comment
+// @Router /comments/{commentId} [put]
 func (h *commentsHandlers) UpdateComment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		CommentIdStr := chi.URLParam(r, "commentId")
@@ -54,6 +75,11 @@ func (h *commentsHandlers) UpdateComment() http.HandlerFunc {
 		}
 		var updateComment struct {
 			Message string `json:"message"`
+		}
+
+		if err := helpers.Validate(r.Context(), updateComment); err != nil {
+			errors.ErrorRes(w, err, http.StatusBadRequest)
+			return
 		}
 
 		err = json.NewDecoder(r.Body).Decode(&updateComment)
@@ -77,6 +103,13 @@ func (h *commentsHandlers) UpdateComment() http.HandlerFunc {
 	}
 }
 
+// @Summary Delete Comment
+// @Description delete a comment
+// @Tags Comments
+// @Param commentId path int true "Comment ID"
+// @Produce json
+// @Success 204 "No Content"
+// @Router /comments/{commentId} [delete]
 func (h *commentsHandlers) DeleteComment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		commentIdStr := chi.URLParam(r, "commentId")
@@ -97,6 +130,13 @@ func (h *commentsHandlers) DeleteComment() http.HandlerFunc {
 
 }
 
+// @Summary Get Comment by ID
+// @Description get a comment by ID
+// @Tags Comments
+// @Param commentId path int true "Comment ID"
+// @Produce json
+// @Success 200 {object} models.Comment
+// @Router /comments/{commentId} [get]
 func (h *commentsHandlers) GetCommentByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		commentIdStr := chi.URLParam(r, "commentId")
@@ -117,6 +157,13 @@ func (h *commentsHandlers) GetCommentByID() http.HandlerFunc {
 	}
 }
 
+// @Summary Get Comments by Post ID
+// @Description get a list of comments by post ID
+// @Tags Comments
+// @Param postId path int true "Post ID"
+// @Produce json
+// @Success 200 {array} models.Comment
+// @Router /comments/post/{postId} [get]
 func (h *commentsHandlers) GetCommentsByPostID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		postIdStr := chi.URLParam(r, "postId")

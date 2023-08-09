@@ -24,6 +24,14 @@ func NewMessagesHandlers(cfg *config.Config, logger logger.ZapLogger, messagesUC
 	return &messagesHandlers{cfg: cfg, logger: logger, messagesUC: messagesUC}
 }
 
+// @Summary Create Message
+// @Description create a new message
+// @Tags Messages
+// @Accept json
+// @Produce json
+// @Param message body models.Message true "Message object to be created"
+// @Success 201 {object} models.Message
+// @Router /messages [post]
 func (h *messagesHandlers) CreateMessage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		message := &models.Message{}
@@ -38,6 +46,11 @@ func (h *messagesHandlers) CreateMessage() http.HandlerFunc {
 			return
 		}
 
+		if err := helpers.Validate(r.Context(), message); err != nil {
+			errors.ErrorRes(w, err, http.StatusBadRequest)
+			return
+		}
+
 		createdMessage, err := h.messagesUC.CreateMessage(r.Context(), message)
 		if err != nil {
 			helpers.LogError(h.logger, err)
@@ -48,6 +61,14 @@ func (h *messagesHandlers) CreateMessage() http.HandlerFunc {
 	}
 }
 
+// @Summary Update Message
+// @Description update a message
+// @Tags Messages
+// @Param messageId path int true "Message ID"
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.Message
+// @Router /messages/{messageId} [put]
 func (h *messagesHandlers) UpdateMessage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		messageIdStr := chi.URLParam(r, "messageId")
@@ -57,11 +78,16 @@ func (h *messagesHandlers) UpdateMessage() http.HandlerFunc {
 			return
 		}
 		var updateMessage struct {
-			Message string `json:"message"`
+			Message string `json:"message" validator:"required,gte=1,lte=1000"`
 		}
 
 		err = json.NewDecoder(r.Body).Decode(&updateMessage)
 		if err != nil {
+			errors.ErrorRes(w, err, http.StatusBadRequest)
+			return
+		}
+
+		if err := helpers.Validate(r.Context(), updateMessage); err != nil {
 			errors.ErrorRes(w, err, http.StatusBadRequest)
 			return
 		}
@@ -86,6 +112,13 @@ func (h *messagesHandlers) UpdateMessage() http.HandlerFunc {
 	}
 }
 
+// @Summary Delete Message
+// @Description delete a message
+// @Tags Messages
+// @Param messageId path int true "Message ID"
+// @Produce json
+// @Success 204 "No Content"
+// @Router /messages/{messageId} [delete]
 func (h *messagesHandlers) DeleteMessage() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		messageIdStr := chi.URLParam(r, "messageId")
@@ -106,6 +139,13 @@ func (h *messagesHandlers) DeleteMessage() http.HandlerFunc {
 
 }
 
+// @Summary Get Message by ID
+// @Description get a message by ID
+// @Tags Messages
+// @Param messageId path int true "Message ID"
+// @Produce json
+// @Success 200 {object} models.Message
+// @Router /messages/{messageId} [get]
 func (h *messagesHandlers) GetMessageByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		messageIdStr := chi.URLParam(r, "messageId")
@@ -126,6 +166,13 @@ func (h *messagesHandlers) GetMessageByID() http.HandlerFunc {
 	}
 }
 
+// @Summary Get Messages by User ID
+// @Description get a list of messages by user ID
+// @Tags Messages
+// @Param userId path int true "User ID"
+// @Produce json
+// @Success 200 {array} models.Message
+// @Router /messages/user/{userId} [get]
 func (h *messagesHandlers) GetMessagesByUserID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userIdStr := chi.URLParam(r, "userId")

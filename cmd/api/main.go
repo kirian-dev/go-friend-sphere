@@ -16,6 +16,13 @@ import (
 	"github.com/uber/jaeger-lib/metrics"
 )
 
+// @title GO-Friend-Sphere
+// @version 1.0
+// @description Pet-project GO-Friend-Sphere REST API
+// @contact.email polozenko.kirill.job@gmail.com
+// @BasePath /
+// @host localhost:8080
+
 func main() {
 	log.Println("Starting server")
 

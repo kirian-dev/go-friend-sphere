@@ -25,6 +25,14 @@ func NewPostsHandlers(cfg *config.Config, logger logger.ZapLogger, postsUC posts
 	return &postsHandlers{cfg: cfg, logger: logger, postsUC: postsUC}
 }
 
+// @Summary Create Post
+// @Description create a new post
+// @Tags Posts
+// @Accept json
+// @Produce json
+// @Param post body models.Post true "Post object to be created"
+// @Success 201 {object} models.Post
+// @Router /posts [post]
 func (h *postsHandlers) CreatePost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		post := &models.Post{}
@@ -32,6 +40,11 @@ func (h *postsHandlers) CreatePost() http.HandlerFunc {
 		if err := helpers.ReadRequest(r, post); err != nil {
 			helpers.LogError(h.logger, err)
 			errors.ErrorRes(w, err, http.StatusInternalServerError)
+			return
+		}
+
+		if err := helpers.Validate(r.Context(), post); err != nil {
+			errors.ErrorRes(w, err, http.StatusBadRequest)
 			return
 		}
 
@@ -45,6 +58,14 @@ func (h *postsHandlers) CreatePost() http.HandlerFunc {
 	}
 }
 
+// @Summary Update Post
+// @Description update a post
+// @Tags Posts
+// @Param postId path int true "Post ID"
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.Post
+// @Router /posts/{postId} [put]
 func (h *postsHandlers) UpdatePost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		postIdStr := chi.URLParam(r, "postId")
@@ -54,12 +75,17 @@ func (h *postsHandlers) UpdatePost() http.HandlerFunc {
 			return
 		}
 		var updatePost struct {
-			Content  string `json:"content"`
-			ImageUrl string `json:"image_url"`
+			Content  string `json:"content" validator:"required,lte=2000"`
+			ImageUrl string `json:"image_url" validator:"required,lte=2000"`
 		}
 
 		err = json.NewDecoder(r.Body).Decode(&updatePost)
 		if err != nil {
+			errors.ErrorRes(w, err, http.StatusBadRequest)
+			return
+		}
+
+		if err := helpers.Validate(r.Context(), updatePost); err != nil {
 			errors.ErrorRes(w, err, http.StatusBadRequest)
 			return
 		}
@@ -80,6 +106,13 @@ func (h *postsHandlers) UpdatePost() http.HandlerFunc {
 	}
 }
 
+// @Summary Delete Post
+// @Description delete a post
+// @Tags Posts
+// @Param postId path int true "Post ID"
+// @Produce json
+// @Success 204 "No Content"
+// @Router /posts/{postId} [delete]
 func (h *postsHandlers) DeletePost() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		postIdStr := chi.URLParam(r, "postId")
@@ -100,6 +133,13 @@ func (h *postsHandlers) DeletePost() http.HandlerFunc {
 
 }
 
+// @Summary Get Post by ID
+// @Description get a post by ID
+// @Tags Posts
+// @Param postId path int true "Post ID"
+// @Produce json
+// @Success 200 {object} models.Post
+// @Router /posts/{postId} [get]v
 func (h *postsHandlers) GetPostById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		postIdStr := chi.URLParam(r, "postId")
@@ -120,6 +160,16 @@ func (h *postsHandlers) GetPostById() http.HandlerFunc {
 	}
 }
 
+// @Summary Get Posts
+// @Description get a list of posts
+// @Tags Posts
+// @Param offset query int false "Offset for pagination"
+// @Param limit query int false "Limit for pagination"
+// @Param search query string false "Search query"
+// @Param sort query string false "Sorting order"
+// @Produce json
+// @Success 200 {array} models.Post
+// @Router /posts [get]
 func (h *postsHandlers) GetPosts() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		offsetStr := r.URL.Query().Get("offset")

@@ -24,6 +24,14 @@ func NewFriendshipsHandlers(cfg *config.Config, logger logger.ZapLogger, friends
 	return &friendshipsHandlers{cfg: cfg, logger: logger, friendshipsUC: friendshipsUC}
 }
 
+// @Summary Create Friendship
+// @Description create a new friendship
+// @Tags Friendships
+// @Accept json
+// @Produce json
+// @Param friendship body models.Friendship true "Friendship object to be created"
+// @Success 201 {object} models.Friendship
+// @Router /friendships [post]
 func (h *friendshipsHandlers) CreateFriendship() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		friendship := &models.Friendship{}
@@ -38,6 +46,11 @@ func (h *friendshipsHandlers) CreateFriendship() http.HandlerFunc {
 			return
 		}
 
+		if err := helpers.Validate(r.Context(), friendship); err != nil {
+			errors.ErrorRes(w, err, http.StatusBadRequest)
+			return
+		}
+
 		createdFriendship, err := h.friendshipsUC.CreateFriendship(r.Context(), friendship)
 		if err != nil {
 			helpers.LogError(h.logger, err)
@@ -48,6 +61,14 @@ func (h *friendshipsHandlers) CreateFriendship() http.HandlerFunc {
 	}
 }
 
+// @Summary Update Friendship
+// @Description update a friendship's status
+// @Tags Friendships
+// @Param friendshipId path int true "Friendship ID"
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.Friendship
+// @Router /friendships/{friendshipId} [put]
 func (h *friendshipsHandlers) UpdateFriendship() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		FriendshipIdStr := chi.URLParam(r, "friendshipId")
@@ -57,7 +78,7 @@ func (h *friendshipsHandlers) UpdateFriendship() http.HandlerFunc {
 			return
 		}
 		var updateFriendship struct {
-			Status string `json:"status"`
+			Status string `json:"status" validator:"omitempty,required"`
 		}
 
 		err = json.NewDecoder(r.Body).Decode(&updateFriendship)
@@ -69,6 +90,11 @@ func (h *friendshipsHandlers) UpdateFriendship() http.HandlerFunc {
 		friendship := &models.Friendship{
 			FriendshipID: FriendshipId,
 			Status:       updateFriendship.Status,
+		}
+
+		if err := helpers.Validate(r.Context(), updateFriendship); err != nil {
+			errors.ErrorRes(w, err, http.StatusBadRequest)
+			return
 		}
 
 		updatedFriendship, err := h.friendshipsUC.UpdateFriendship(r.Context(), friendship)
@@ -86,6 +112,13 @@ func (h *friendshipsHandlers) UpdateFriendship() http.HandlerFunc {
 	}
 }
 
+// @Summary Delete Friendship
+// @Description delete a friendship
+// @Tags Friendships
+// @Param friendshipId path int true "Friendship ID"
+// @Produce json
+// @Success 204 "No Content"
+// @Router /friendships/{friendshipId} [delete]
 func (h *friendshipsHandlers) DeleteFriendship() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		friendshipIdStr := chi.URLParam(r, "friendshipId")
@@ -106,6 +139,13 @@ func (h *friendshipsHandlers) DeleteFriendship() http.HandlerFunc {
 
 }
 
+// @Summary Get Friendship by ID
+// @Description get a friendship by ID
+// @Tags Friendships
+// @Param friendshipId path int true "Friendship ID"
+// @Produce json
+// @Success 200 {object} models.Friendship
+// @Router /friendships/{friendshipId} [get]
 func (h *friendshipsHandlers) GetFriendshipByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		friendshipIdStr := chi.URLParam(r, "friendshipId")
@@ -126,6 +166,13 @@ func (h *friendshipsHandlers) GetFriendshipByID() http.HandlerFunc {
 	}
 }
 
+// @Summary Get Friendships by User ID
+// @Description get a list of friendships by user ID
+// @Tags Friendships
+// @Param userId path int true "User ID"
+// @Produce json
+// @Success 200 {array} models.Friendship
+// @Router /friendships/user/{userId} [get]
 func (h *friendshipsHandlers) GetFriendshipsByUserID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userIdStr := chi.URLParam(r, "userId")
